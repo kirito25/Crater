@@ -13,8 +13,8 @@ import os, sys
 BLUE = [255,0,0]
 TARGET_SHAPE = (200, 200)
 
-SRC = "./images/tile3_24/"
-DST = "./images/normalize_images/"
+SRC = "./crater_data/images/tile3_24/"
+DST = "./crater_data/images/normalize_images/"
 if len(sys.argv) < 2 and (sys.argv[1] != "resize" or sys.argv[1] != "border"):
     print "invalid pre-process methods"
     sys.exit()
