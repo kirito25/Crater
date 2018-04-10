@@ -15,11 +15,12 @@ TARGET_SHAPE = (200, 200)
 
 SRC = "./crater_data/images/tile3_24/"
 DST = "./crater_data/images/normalize_images/"
-if len(sys.argv) < 2 and (sys.argv[1] != "resize" or sys.argv[1] != "border"):
-    print "invalid pre-process methods"
-    sys.exit()
 if not os.path.exists("./crater_data"):
     print "Please unzip the zip file"
+    sys.exit()
+
+if len(sys.argv) < 2 and (sys.argv[1] != "resize" or sys.argv[1] != "border"):
+    print "invalid pre-process methods"
     sys.exit()
 
 i = 0
