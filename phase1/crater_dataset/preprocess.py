@@ -18,6 +18,9 @@ DST = "./crater_data/images/normalize_images/"
 if len(sys.argv) < 2 and (sys.argv[1] != "resize" or sys.argv[1] != "border"):
     print "invalid pre-process methods"
     sys.exit()
+if not os.path.exists("./crater_data"):
+    print "Please unzip the zip file"
+    sys.exit()
 
 i = 0
 for directory in os.listdir(SRC):
