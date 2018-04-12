@@ -53,7 +53,6 @@ def load_data_wrapper(debug = False):
     containing the input image.  ``y`` is 1 dimensional vector 0 or 1.
     1 being a crater and 0 not being a crater.
     """
-    debug = True
     data = load_data(debug)
 
     training_data = data[:500]
