@@ -33,6 +33,7 @@ for directory in os.listdir(SRC):
         pass
     for filename in os.listdir(SRC + directory):
         img1 = cv.imread(SRC + directory + filename)
+        img1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
         top = bottom = (TARGET_SHAPE[0] - img1.shape[0] ) / 2
         right = left = (TARGET_SHAPE[1] - img1.shape[1] ) / 2
         constant = None
