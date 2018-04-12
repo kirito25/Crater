@@ -30,6 +30,7 @@ def load_data(debug = False):
             img = cv.imread(SRC + directory + "/" + filename)
             img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
             img = img.flatten() / 255.0
+            img = img.reshape(200*200,1)
             images.append(img)
             labels.append(vectorized_result(VALUE))
             if debug:
@@ -56,8 +57,16 @@ def load_data_wrapper(debug = False):
     data = load_data(debug)
 
     training_data = data[:500]
-    validation_data = data[500:800]
-    test_data = data[800:1000]
+    validation = data[500:800]
+    test = data[800:1000]
+    
+    test_data = []
+    validation_data = []
+
+    for (x, y) in test:
+        test_data.append((x, np.argmax(y)))
+    for (x, y) in validation:
+        validation_data.append((x, np.argmax(y)))
 
     return (training_data, validation_data, test_data)
 
@@ -65,3 +74,4 @@ def vectorized_result(j):
     e = np.zeros((2,1), dtype=int)
     e[j] = 1
     return e
+
