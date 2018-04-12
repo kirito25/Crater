@@ -28,6 +28,7 @@ def load_data(debug = False):
             VALUE = 1
         for filename in os.listdir(SRC + directory):
             img = cv.imread(SRC + directory + "/" + filename)
+            img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
             img = img.flatten() / 255.0
             images.append(img)
             labels.append(vectorized_result(VALUE))
@@ -54,7 +55,6 @@ def load_data_wrapper(debug = False):
     """
     debug = True
     data = load_data(debug)
-    size = len(images) / 3
 
     training_data = data[:500]
     validation_data = data[500:800]
