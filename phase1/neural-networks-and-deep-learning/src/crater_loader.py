@@ -63,5 +63,6 @@ def load_data_wrapper(debug = False):
     return (training_data, validation_data, test_data)
 
 def vectorized_result(j):
-    e = np.array([j], dtype=int)
+    e = np.zeros((2,1), dtype=int)
+    e[j] = 1
     return e
