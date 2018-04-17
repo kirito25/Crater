@@ -11,7 +11,7 @@ and omits many desirable features.
 
 #### Libraries
 # Standard library
-import random
+import random, sys
 
 # Third-party libraries
 import numpy as np
@@ -34,6 +34,9 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
+        self.fp = 0
+        self.tp = 0
+        self.fn = 0
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -61,8 +64,7 @@ class Network(object):
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
+                print "Epoch %d: %d / %d" % (j, self.evaluate(test_data), n_test)
             else:
                 print "Epoch {0} complete".format(j)
 
@@ -117,14 +119,30 @@ class Network(object):
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
 
-    def evaluate(self, test_data):
+    def evaluate(self, test_data, show = False):
         """Return the number of test inputs for which the neural
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
         neuron in the final layer has the highest activation."""
-        test_results = [self.feedforward(x), y)
-                        for (x, y) in test_data]
-        return sum(int(x == y) for (x, y) in test_results)
+        correct_sum = 0
+        self.fp = 0
+        self.fn = 0
+        self.tp = 0
+        test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+        for (x, y) in test_results:
+            correct_sum += int(x == y)
+            self.tp += int(x == y)
+            self.fp += int(x == 1 and y == 0)
+            self.fn += int(x == 0 and y == 1)
+        if show:
+            s = "TP = %d  FP = %d  FN = %d  " % (self.tp, self.fp, self.fn)
+            s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
+                                                            float(self.tp) / (self.tp + self.fn), 
+                                                            float(self.fp) / (self.tp + self.fp), 
+                                                            float(self.tp) / (self.tp + self.fp + self.fn))
+            sys.stdout.write(s)
+            sys.stdout.flush()
+        return correct_sum
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /

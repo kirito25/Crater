@@ -7,8 +7,9 @@ directory.
 
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
 import os, sys
+# Only import for debugging
+#from matplotlib import pyplot as plt
 
 BLUE = [255,0,0]
 TARGET_SHAPE = (200, 200)
@@ -19,8 +20,12 @@ if not os.path.exists("./crater_data"):
     print "Please unzip the zip file"
     sys.exit()
 
-if len(sys.argv) < 2 and (sys.argv[1] != "resize" or sys.argv[1] != "border"):
-    print "invalid pre-process methods"
+try:
+    if sys.argv[1] != "resize" or sys.argv[1] != "border":
+        print "invalid pre-process methods"
+        sys.exit()
+except IndexError:
+    print "Provide the preprocess method"
     sys.exit()
 
 i = 0
