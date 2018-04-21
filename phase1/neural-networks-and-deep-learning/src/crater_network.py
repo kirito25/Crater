@@ -131,9 +131,9 @@ class Network(object):
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
         for (x, y) in test_results:
             correct_sum += int(x == y)
-            self.tp += int(x == y)
             self.fp += int(x == 1 and y == 0)
             self.fn += int(x == 0 and y == 1)
+            self.tp += int(x == 1 and y == 1)
         if show:
             s = "TP = %d  FP = %d  FN = %d  " % (self.tp, self.fp, self.fn)
             s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
