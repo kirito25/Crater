@@ -37,6 +37,7 @@ class Network(object):
         self.fp = 0
         self.tp = 0
         self.fn = 0
+        self.tn = 0
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -128,14 +129,16 @@ class Network(object):
         self.fp = 0
         self.fn = 0
         self.tp = 0
+        self.tn = 0
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
         for (x, y) in test_results:
             correct_sum += int(x == y)
+            self.tn += int(x == 0 and y == 0)
             self.fp += int(x == 1 and y == 0)
             self.fn += int(x == 0 and y == 1)
             self.tp += int(x == 1 and y == 1)
         if show:
-            s = "TP = %d  FP = %d  FN = %d  " % (self.tp, self.fp, self.fn)
+            s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
             s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
                                                             float(self.tp) / (self.tp + self.fn), 
                                                             float(self.fp) / (self.tp + self.fp), 
