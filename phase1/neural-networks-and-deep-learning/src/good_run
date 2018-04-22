@@ -1,0 +1,1 @@
+python run_experiment.py -N 3 -S 50 20 -eta 2.02 -m 50
