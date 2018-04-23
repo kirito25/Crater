@@ -129,8 +129,9 @@ class Network(object):
         self.fn = 0
         self.tp = 0
         self.tn = 0
-        test_results = [(np.argmax(self.feedforward(x[0])), y, x[1]) for (x, y) in test_data]
-        for (x, y, z) in test_results:
+        test_results = [(self.feedforward(x[0]), y, x[1]) for (x, y) in test_data]
+        for (network_result, y, z) in test_results:
+            x = np.argmax(network_result)
             correct_sum += int(x == y)
             self.tn += int(x == 0 and y == 0)
             self.fp += int(x == 1 and y == 0)
@@ -138,7 +139,7 @@ class Network(object):
             self.tp += int(x == 1 and y == 1)
             if updatelist:
                 if (x == 1 and y == 0) or (x == 0 and y == 1):
-                    self.failures.append(z)
+                    self.failures.append((z, network_result))
 
         if show:
             s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)

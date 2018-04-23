@@ -15,9 +15,11 @@ N = args.N
 eta = args.eta
 epoch = args.epoch
 mini_batch_size = args.m
-sizes = [200 * 200] + args.S + [2]
+training_data, validation_data, test_data = crater_loader.load_data_wrapper()
+sizes = [len(training_data[0][0][0]) ] + args.S + [len(training_data[0][1])]
 print "Running %d experiments with layers %s, eta = %s, mini_batch_size = %s, epoch = %s" % \
                                                             (N, sizes, eta, mini_batch_size, epoch)
+
 fp = 0.0
 fn = 0.0
 tp = 0.0
@@ -27,8 +29,6 @@ quality_rate = 0.0
 hard = {}
 
 for i in range(N):
-    # Load data every time at random
-    training_data, validation_data, test_data = crater_loader.load_data_wrapper()
     print "Running experiment #%s" % (i + 1)
     net = crater_network.Network(sizes)
     net.SGD(training_data, epoch, mini_batch_size, eta, test_data)
@@ -44,11 +44,14 @@ for i in range(N):
     false_rate     += float(net.fp) / (net.tp + net.fp)
     quality_rate   += float(net.tp) / (net.tp + net.fp + net.fn)
 
-    for path in net.failures:
+    for (path, output) in net.failures:
         try:
-            hard[path] = hard[path] + 1
+            hard[path][0] += 1
         except KeyError:
-            hard[path] = 1
+            hard[path] = [1, output]
+
+    # Load data every time at random
+    training_data, validation_data, test_data = crater_loader.load_data_wrapper()
 
 
 print "\nAverages of runs:"
@@ -65,7 +68,7 @@ s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (detecti
                                                                          quality_rate)
 print s
 
-for (path, count) in hard.items():
-    if count > 1:
-        print "%s = %s" % (path, count)
+for path, val in hard.items():
+    if val[0] > 1:
+        print "%s : count = %s  output = %s" % (path, val[0], val[1].flatten().tolist())
 
