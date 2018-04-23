@@ -23,7 +23,7 @@ parser.add_argument("-resize", dest="resize", action="store_true",
 parser.add_argument("-border", dest="border", 
                             action="store_true", help="use the border method")
 args = parser.parse_args()
-if len(args.S) < 2:
+if len(args.S) == 2:
     print "here"
     TARGET_SHAPE = tuple(args.S)
 
@@ -31,6 +31,7 @@ resize = True
 border = False
 if border:
     resize = False
+
 
 SRC = "./crater_data/images/tile3_24/"
 DST = "./crater_data/images/normalize_images/"
