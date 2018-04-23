@@ -24,6 +24,7 @@ tp = 0.0
 detection_rate = 0.0
 false_rate = 0.0
 quality_rate = 0.0
+hard = {}
 
 for i in range(N):
     # Load data every time at random
@@ -32,16 +33,23 @@ for i in range(N):
     net = crater_network.Network(sizes)
     net.SGD(training_data, epoch, mini_batch_size, eta, test_data)
     print "Running evaluate on validation_data of size %d" % (len(validation_data))
-    net.evaluate(validation_data, show = True)
+    net.evaluate(validation_data, show = True, updatelist = True)
     # when show = True it does not print a new line
     print
     fp += net.fp
     fn += net.fn
     tp += net.tp
     # adding 1 to avoid divide by 0
-    detection_rate += float(net.tp + 1) / (net.tp + net.fn + 1)
-    false_rate     += float(net.fp + 1) / (net.tp + net.fp + 1)
-    quality_rate   += float(net.tp + 1) / (net.tp + net.fp + net.fn + 1)
+    detection_rate += float(net.tp) / (net.tp + net.fn)
+    false_rate     += float(net.fp) / (net.tp + net.fp)
+    quality_rate   += float(net.tp) / (net.tp + net.fp + net.fn)
+
+    for path in net.failures:
+        try:
+            hard[path] = hard[path] + 1
+        except KeyError:
+            hard[path] = 1
+
 
 print "\nAverages of runs:"
 fp = fp / N
@@ -57,4 +65,7 @@ s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (detecti
                                                                          quality_rate)
 print s
 
+for (path, count) in hard.items():
+    if count > 1:
+        print "%s = %s" % (path, count)
 
