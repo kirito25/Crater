@@ -142,19 +142,19 @@ class Network(object):
                 if (x == 1 and y == 0) or (x == 0 and y == 1):
                     self.failures.append((z, network_result))
 
-        if show:
-            s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
-            s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
-                                                            float(self.tp + FIX) / (self.tp + self.fn + FIX), 
-                                                            float(self.fp + FIX) / (self.tp + self.fp + FIX), 
-                                                            float(self.tp + FIX) / (self.tp + self.fp + self.fn + FIX))
-            sys.stdout.write(s)
-            sys.stdout.flush()
         self.tp += FIX
         self.fn += FIX
         self.fp += FIX
         self.tn += FIX
-        return correct_sum
+         if show:
+            s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
+            s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
+                                                            float(self.tp) / (self.tp + self.fn), 
+                                                            float(self.fp) / (self.tp + self.fp), 
+                                                            float(self.tp) / (self.tp + self.fp + self.fn))
+            sys.stdout.write(s)
+            sys.stdout.flush()
+       return correct_sum
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
