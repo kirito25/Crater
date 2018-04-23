@@ -124,6 +124,7 @@ class Network(object):
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
         neuron in the final layer has the highest activation."""
+        FIX = 10e-10
         correct_sum = 0
         self.fp = 0
         self.fn = 0
@@ -141,7 +142,11 @@ class Network(object):
                 if (x == 1 and y == 0) or (x == 0 and y == 1):
                     self.failures.append((z, network_result))
 
-        if show:
+        self.tp += FIX
+        self.fn += FIX
+        self.fp += FIX
+        self.tn += FIX
+         if show:
             s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
             s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
                                                             float(self.tp) / (self.tp + self.fn), 
@@ -149,7 +154,7 @@ class Network(object):
                                                             float(self.tp) / (self.tp + self.fp + self.fn))
             sys.stdout.write(s)
             sys.stdout.flush()
-        return correct_sum
+       return correct_sum
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
