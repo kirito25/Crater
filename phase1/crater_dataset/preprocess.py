@@ -27,9 +27,9 @@ if len(args.S) == 2:
     TARGET_SHAPE = tuple(args.S)
 
 resize = True
+border = args.border
 if border:
     resize = False
-
 
 SRC = "./crater_data/images/tile3_24/"
 DST = "./crater_data/images/normalize_images/"
