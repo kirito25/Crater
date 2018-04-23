@@ -36,7 +36,7 @@ def load_data(folder = ''):
         img = cv.imread(SRC + "/" + filename)
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         img = img.flatten() / 255.0
-        img = img.reshape(200*200,1)
+        img = img.reshape(len(img),1)
         images.append((img, SRC + "/" + filename))
         labels.append(vectorized_result(VALUE))
 
