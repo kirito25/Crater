@@ -146,7 +146,7 @@ class Network(object):
         self.fn += FIX
         self.fp += FIX
         self.tn += FIX
-         if show:
+        if show:
             s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
             s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
                                                             float(self.tp) / (self.tp + self.fn), 
@@ -154,7 +154,7 @@ class Network(object):
                                                             float(self.tp) / (self.tp + self.fp + self.fn))
             sys.stdout.write(s)
             sys.stdout.flush()
-       return correct_sum
+        return correct_sum
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
