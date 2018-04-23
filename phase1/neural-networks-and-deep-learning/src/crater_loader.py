@@ -9,7 +9,7 @@ import cv2 as cv
 import random
 import numpy as np
 
-def load_data():
+def load_data(folder = ''):
     """
     This fuction will return a list of tuples (x, y).
     x is an nparray as a column vector of the image flatten 
@@ -25,21 +25,20 @@ def load_data():
     
     images = []
     labels = []
-    SRC = "../../crater_dataset/crater_data/images/normalize_images/"
+    SRC = "../../crater_dataset/crater_data/images/normalize_images/" + folder
 
     i = 0
-    for directory in os.listdir(SRC):
-        # assume its a non-crater
-        VALUE = 0
-        if directory == "crater":
-            VALUE = 1
-        for filename in os.listdir(SRC + directory):
-            img = cv.imread(SRC + directory + "/" + filename)
-            img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            img = img.flatten() / 255.0
-            img = img.reshape(200*200,1)
-            images.append(img)
-            labels.append(vectorized_result(VALUE))
+    # assume its a non-crater
+    VALUE = 0
+    if folder == "crater":
+        VALUE = 1
+    for filename in os.listdir(SRC):
+        img = cv.imread(SRC + "/" + filename)
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        img = img.flatten() / 255.0
+        img = img.reshape(200*200,1)
+        images.append((img, SRC + "/" + filename))
+        labels.append(vectorized_result(VALUE))
 
     data = zip(images, labels)
     random.shuffle(data)
@@ -59,11 +58,29 @@ def load_data_wrapper():
     activated.
 
     """
-    data = load_data()
+    crater_data    = load_data("crater")
+    noncrater_data = load_data("non-crater")
+    
+    n_crater_data    = len(crater_data)
+    n_noncrater_data = len(noncrater_data)
+    split            = [0.8, 0.2]
 
-    training_data = data[:500]
-    validation = data[500:800]
-    test = data[800:1000]
+    train_end       = validation_start = int(split[0] * n_crater_data)
+    validation_end  = test_start       = int(split[1] * n_crater_data) + train_end
+
+    training_data = crater_data[:train_end] 
+    validation    = crater_data[validation_start:validation_end] 
+    test          = crater_data[test_start:] 
+    
+    train_end       = validation_start = int(split[0] * n_noncrater_data)
+    validation_end  = test_start = int(split[1] * n_noncrater_data) + train_end
+    training_data  += noncrater_data[:train_end]
+    validation     += noncrater_data[validation_start:validation_end]
+    test           += noncrater_data[test_start:]
+
+    random.shuffle(training_data)
+    random.shuffle(validation)
+    random.shuffle(test)
     
     test_data = []
     validation_data = []

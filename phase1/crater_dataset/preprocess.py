@@ -21,7 +21,7 @@ if not os.path.exists("./crater_data"):
     sys.exit()
 
 try:
-    if sys.argv[1] != "resize" or sys.argv[1] != "border":
+    if sys.argv[1] != "resize" and sys.argv[1] != "border":
         print "invalid pre-process methods"
         sys.exit()
 except IndexError:
