@@ -44,7 +44,7 @@ def load_data(folder = ''):
     random.shuffle(data)
     return data
 
-def load_data_wrapper():
+def load_data_wrapper(split=[0.8,0.2]):
     """
     Return a tuple containing ``(training_data, validation_data,
     test_data)``. 
@@ -63,7 +63,6 @@ def load_data_wrapper():
     
     n_crater_data    = len(crater_data)
     n_noncrater_data = len(noncrater_data)
-    split            = [0.8, 0.2]
 
     train_end       = validation_start = int(split[0] * n_crater_data)
     validation_end  = test_start       = int(split[1] * n_crater_data) + train_end
@@ -97,3 +96,6 @@ def vectorized_result(j):
     e[j] = 1
     return e
 
+def load_crater_data_phaseII_wrapper():
+    # 70% training_data , 15% validation data , and remaining test data
+    return load_data_wrapper([0.70, 0.15])
