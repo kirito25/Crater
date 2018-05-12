@@ -8,8 +8,6 @@ import os
 import cv2 as cv
 import random
 import numpy as np
-import theano
-import theano.tensor as T
 
 def load_data(folder = '', includeFilename = True, flat = True):
     """
