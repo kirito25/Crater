@@ -28,16 +28,14 @@ def load_data(folder = '', includeFilename = True, flat = True):
     SRC = "../../crater_dataset/crater_data/images/normalize_images/" + folder
 
     i = 0
-    for directory in os.listdir(SRC):
-        # assume its a non-crater
-        VALUE = 0
-        if directory == ".DS_Store":
-            continue
-        if directory == "crater":
-            VALUE = 1
-        for filename in os.listdir(SRC + directory):
-            img = cv.imread(SRC + directory + "/" + filename)
-            img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    # assume its a non-crater
+    VALUE = 0
+    if folder == "crater":
+        VALUE = 1
+    for filename in os.listdir(SRC):
+        img = cv.imread(SRC + "/" + filename)
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        if flat:
             img = img.flatten() / 255.0
             img = img.reshape(len(img),1)
         else:
