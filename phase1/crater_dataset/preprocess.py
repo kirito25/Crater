@@ -8,33 +8,24 @@ directory.
 import cv2 as cv
 import numpy as np
 import os, sys
-import argparse
 # Only import for debugging
 #from matplotlib import pyplot as plt
 
 BLUE = [255,0,0]
-TARGET_SHAPE = (50, 50)
-parser = argparse.ArgumentParser(description="Preprocess the images.")
-
-parser.add_argument("-S", metavar='sizes', nargs="+", type=int, default=[50,50],
-                            help="the size of the output image, default is [50, 50]")
-parser.add_argument("-resize", dest="resize", action="store_true",
-                            help="use the resize method, this is the default")
-parser.add_argument("-border", dest="border", 
-                            action="store_true", help="use the border method")
-args = parser.parse_args()
-if len(args.S) == 2:
-    TARGET_SHAPE = tuple(args.S)
-
-resize = True
-border = args.border
-if border:
-    resize = False
+TARGET_SHAPE = (200, 200)
 
 SRC = "./crater_data/images/tile3_24/"
 DST = "./crater_data/images/normalize_images/"
 if not os.path.exists("./crater_data"):
     print "Please unzip the zip file"
+    sys.exit()
+
+try:
+    if sys.argv[1] != "resize" or sys.argv[1] != "border":
+        print "invalid pre-process methods"
+        sys.exit()
+except IndexError:
+    print "Provide the preprocess method"
     sys.exit()
 
 i = 0
@@ -51,10 +42,10 @@ for directory in os.listdir(SRC):
         top = bottom = (TARGET_SHAPE[0] - img1.shape[0] ) / 2
         right = left = (TARGET_SHAPE[1] - img1.shape[1] ) / 2
         constant = None
-        if resize:
+        if sys.argv[1] == "resize":
             constant = cv.resize(img1, TARGET_SHAPE)
             cv.normalize(constant, constant, 0, 255, cv.NORM_MINMAX)
-        elif border:
+        elif sys.argv[1] == "border":
             constant = cv.copyMakeBorder(img1, top, bottom, left, right, cv.BORDER_CONSTANT,value=BLUE)
 
         cv.imwrite(DST + directory + filename, constant)

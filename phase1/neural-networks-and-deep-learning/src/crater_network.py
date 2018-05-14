@@ -37,8 +37,6 @@ class Network(object):
         self.fp = 0
         self.tp = 0
         self.fn = 0
-        self.tn = 0
-        self.failures = []
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -46,7 +44,8 @@ class Network(object):
             a = sigmoid(np.dot(w, a)+b)
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta,
+            test_data=None):
         """Train the neural network using mini-batch stochastic
         gradient descent.  The ``training_data`` is a list of tuples
         ``(x, y)`` representing the training inputs and the desired
@@ -59,7 +58,9 @@ class Network(object):
         n = len(training_data)
         for j in xrange(epochs):
             random.shuffle(training_data)
-            mini_batches = [ training_data[k:k+mini_batch_size] for k in xrange(0, n, mini_batch_size)]
+            mini_batches = [
+                training_data[k:k+mini_batch_size]
+                for k in xrange(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
@@ -75,8 +76,6 @@ class Network(object):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
-            # x = (img, path) now just img
-            x = x[0]
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
@@ -102,7 +101,8 @@ class Network(object):
             activation = sigmoid(z)
             activations.append(activation)
         # backward pass
-        delta = self.cost_derivative(activations[-1], y) * sigmoid_prime(zs[-1])
+        delta = self.cost_derivative(activations[-1], y) * \
+            sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
@@ -119,35 +119,23 @@ class Network(object):
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
 
-    def evaluate(self, test_data, show = False, updatelist = False):
+    def evaluate(self, test_data, show = False):
         """Return the number of test inputs for which the neural
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
         neuron in the final layer has the highest activation."""
-        FIX = 10e-10
         correct_sum = 0
         self.fp = 0
         self.fn = 0
         self.tp = 0
-        self.tn = 0
-        test_results = [(self.feedforward(x[0]), y, x[1]) for (x, y) in test_data]
-        for (network_result, y, z) in test_results:
-            x = np.argmax(network_result)
+        test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
+        for (x, y) in test_results:
             correct_sum += int(x == y)
-            self.tn += int(x == 0 and y == 0)
+            self.tp += int(x == y)
             self.fp += int(x == 1 and y == 0)
             self.fn += int(x == 0 and y == 1)
-            self.tp += int(x == 1 and y == 1)
-            if updatelist:
-                if (x == 1 and y == 0) or (x == 0 and y == 1):
-                    self.failures.append((z, network_result))
-
-        self.tp += FIX
-        self.fn += FIX
-        self.fp += FIX
-        self.tn += FIX
         if show:
-            s = "TP = %d  TN = %d  FP = %d  FN = %d  " % (self.tp, self.tn, self.fp, self.fn)
+            s = "TP = %d  FP = %d  FN = %d  " % (self.tp, self.fp, self.fn)
             s += "detection_rate = %.2f  false_rate = %.2f  quality_rate = %.2f " % (
                                                             float(self.tp) / (self.tp + self.fn), 
                                                             float(self.fp) / (self.tp + self.fp), 
