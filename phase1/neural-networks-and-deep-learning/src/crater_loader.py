@@ -75,6 +75,7 @@ def load_data_wrapper(split=[0.8,0.2], filename=True, flat=True, raw=True):
     train_end       = validation_start = int(split[0] * n_crater_data)
     validation_end  = test_start       = int(split[1] * n_crater_data) + train_end
 
+    print "Craters in training: %d   Craters in validation : %d " % (train_end, validation_end - train_end)
     training_data = crater_data[:train_end] 
     validation    = crater_data[validation_start:validation_end] 
     test          = crater_data[test_start:] 
