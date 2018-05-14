@@ -68,9 +68,8 @@ def tn(y_true, y_pred):
     y_true = K.argmax(y_true, 1)
     y_pred = K.argmax(y_pred, 1)
     correct_answers = K.equal(y_true, y_pred)
-    crater = tf.cast(y_true, bool)
-    tp = tf.logical_and(correct_answers, crater)
-    tn = tf.logical_not(tp)
+    non_crater = tf.logical_not(tf.cast(y_true, bool))
+    tn = tf.logical_and(correct_answers, non_crater)
     return tf.count_nonzero(tn)
 
 def fp(y_true, y_pred):
