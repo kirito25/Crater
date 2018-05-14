@@ -37,13 +37,46 @@ def cvImg2input(img):
 # custom logger
 class Logs(keras.callbacks.Callback):
     def on_train_begin(self, logs=None):
-        pass
+        self.history = {'acc': [], 'val_acc' : [], 'fn': [[],[]], 'fp' : [[],[]],
+                'tp': [[],[]], 'tn': [[],[]], 'num_of_craters': [[],[]], 'num_of_non_craters': [[],[]] }
     
     def on_epoch_end(self, epoch, logs={}):
-        pass
+        self.history['acc'].append(logs.get('acc'))
+        self.history['val_acc'].append(logs.get('val_acc'))
+        
+        self.history['fn'][0].append(sum(self.history['fn'][1]))
+        self.history['fn'][1] = []
+
+        self.history['fp'][0].append(sum(self.history['fp'][1]))
+        self.history['fp'][1]  = []
+
+        self.history['tp'][0].append(sum(self.history['tp'][1]))
+        self.history['tp'][1] = []
+
+        self.history['tn'][0].append(sum(self.history['tn'][1]))
+        self.history['tn'][1] = []
+
+        self.history['num_of_craters'][0].append(sum(self.history['num_of_craters'][1]))
+        self.history['num_of_craters'][1] = []
+
+        self.history['num_of_non_craters'][0].append(sum(self.history['num_of_non_craters'][1]))
+        self.history['num_of_non_craters'][1] = []
 
     def on_batch_end(self, epoch, logs={}):
-        pass
+        self.history['fn'][1].append(float(logs.get('fn')))
+        self.history['fp'][1].append(float(logs.get('fp')))
+        self.history['tp'][1].append(float(logs.get('tp')))
+        self.history['tn'][1].append(float(logs.get('tn')))
+        self.history['num_of_non_craters'][1].append(float(logs.get('num_of_non_craters')))
+        self.history['num_of_craters'][1].append(float(logs.get('num_of_craters')))
+
+    def on_train_end(self, epoch, logs={}):
+        self.history['fn'] = self.history['fn'][0]
+        self.history['fp'] = self.history['fp'][0]
+        self.history['tp'] = self.history['tp'][0]
+        self.history['tn'] = self.history['tn'][0]
+        self.history['num_of_craters'] = self.history['num_of_craters'][0]
+        self.history['num_of_non_craters'] = self.history['num_of_non_craters'][0]
 
 #custom metrics
 def num_of_craters(y_true, y_pred):
@@ -132,8 +165,9 @@ def network():
 
     model.compile(loss=keras.losses.categorical_crossentropy, optimizer='sgd',  metrics=['accuracy', tp, tn, fn, fp, num_of_non_craters, num_of_craters])
 
-    history = model.fit(training_data_x, training_data_y, batch_size=batch_size, epochs=epochs, 
+    model.fit(training_data_x, training_data_y, batch_size=batch_size, epochs=epochs, 
             callbacks=[logger], validation_data=(validation_data_x, validation_data_y))
+
 
     print "\nEvaluating on test data"
     score = model.evaluate(test_data_x, test_data_y, verbose=1)
@@ -141,28 +175,28 @@ def network():
     print 'Test accuracy: %.2f' % ( float(score[1]) )
     print "Creating plots ..."
     # Creates the plot 
-    plot(data=history.history['acc'], title="Accuracy vs Epochs on training data", 
+    plot(data=logger.history['acc'], title="Accuracy vs Epochs on training data", 
             filename='training_accuracy_vs_epochs', xlabel="Epoch", ylabel="Accuracy")
-    plot(data=history.history['val_acc'], title="Accuracy vs Epochs on validation data", 
+    plot(data=logger.history['val_acc'], title="Accuracy vs Epochs on validation data", 
             filename='validation_accuracy_vs_epochs', xlabel="Epoch", ylabel="Accuracy")
    
-    plot(data=history.history['fn'], title="FN vs Epoch on training data", filename='training_fn_vs_epoch', xlabel="Epoch", ylabel="FN")
-    plot(data=history.history['fp'], title="FP vs Epoch on training data", filename='training_fp_vs_epoch', xlabel="Epoch", ylabel="FP")
+    plot(data=logger.history['fn'], title="FN vs Epoch on training data", filename='training_fn_vs_epoch', xlabel="Epoch", ylabel="FN")
+    plot(data=logger.history['fp'], title="FP vs Epoch on training data", filename='training_fp_vs_epoch', xlabel="Epoch", ylabel="FP")
     
-    plot(data=[history.history['tp'], history.history['num_of_craters']], title="TP vs Epoch training data", 
+    plot(data=[logger.history['tp'], logger.history['num_of_craters']], title="TP vs Epoch training data", 
             filename='training_tp_vs_epoch', xlabel="Epoch", ylabel="TP")
-    plot(data=[history.history['tn'], history.history['num_of_non_craters']], title="TN vs Epoch on training data", 
+    plot(data=[logger.history['tn'], logger.history['num_of_non_craters']], title="TN vs Epoch on training data", 
             filename='training_tn_vs_epoch', xlabel="Epoch", ylabel="TN")
 
-    detection_rate = np.array(history.history['tp']) / ( np.array(history.history['tp']) + np.array(history.history['fn']) )
+    detection_rate = np.array(logger.history['tp']) / ( np.array(logger.history['tp']) + np.array(logger.history['fn']) )
     plot(data=detection_rate.tolist(), title="Detection rate vs Epochs on training data", 
             filename='training_detection_rate_vs_epochs', xlabel="Epoch", ylabel="Detection Rate")
     
-    false_rate = np.array(history.history['fp']) / ( np.array(history.history['tp']) + np.array(history.history['fp']) )
+    false_rate = np.array(logger.history['fp']) / ( np.array(logger.history['tp']) + np.array(logger.history['fp']) )
     plot(data=false_rate.tolist(), title="False rate vs Epochs on training data", 
             filename='training_false_rate_vs_epochs', xlabel="Epoch", ylabel="False Rate")
     
-    quality_rate = np.array(history.history['tp']) / ( np.array(history.history['tp']) + np.array(history.history['fn']) + np.array(history.history['fp']) )
+    quality_rate = np.array(logger.history['tp']) / ( np.array(logger.history['tp']) + np.array(logger.history['fn']) + np.array(logger.history['fp']) )
     plot(data=quality_rate.tolist(), title="Quality rate vs Epochs on training data", 
             filename='training_quality_rate_vs_epochs', xlabel="Epoch", ylabel="Quality Rate")
     return model
