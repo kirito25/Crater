@@ -1,6 +1,7 @@
 # images
 crater_data
 *.pgm
+*.jpeg
 *.jpg
 *.png
 *.json
