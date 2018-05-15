@@ -5,6 +5,7 @@ Do a the following installations:
     pip install tensorflow tensorflow-gpu
     pip install keras
     pip install numpy
+    pip install opencv-python
 
 Add the following to your ~/.bashrc
 """
@@ -18,6 +19,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import cv2
 # stop showing the gpu info
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
@@ -32,6 +34,10 @@ input_shape = (img_x, img_y, 1)
 # takes an image and returns it in a format to be
 # fed to the keras model
 def cvImg2input(img):
+    if img.shape != input_shape:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.resize(img, (img_x, img_y))
+        cv2.normalize(img, img, 0, 255, cv2.NORM_MINMAX)
     return img.reshape(1, img_x, img_y, 1)
 
 # custom logger
