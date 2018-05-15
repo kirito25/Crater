@@ -135,10 +135,19 @@ def plot(title="", data=None, filename=None, xlabel="", ylabel=""):
     plt.savefig(filename)
     plt.close()
 
-def network():
+def network(use_save=True):
     """
     Returns a keras network already trained
     """
+    if os.path.exists("./network.json") and os.path.exists("./network.h5") and use_save:
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        json_file = open("./network.json", 'r')
+        loaded_model_json = json_file.read()
+        json_file.close()
+        loaded_model = keras.models.model_from_json(loaded_model_json)
+        loaded_model.load_weights("./network.h5")
+        return loaded_model
+
     logger = Logs()
 
     training_data, validation_data, test_data = crater_loader.load_crater_data_phaseII_wrapper()
@@ -199,6 +208,11 @@ def network():
     quality_rate = np.array(logger.history['tp']) / ( np.array(logger.history['tp']) + np.array(logger.history['fn']) + np.array(logger.history['fp']) )
     plot(data=quality_rate.tolist(), title="Quality rate vs Epochs on training data", 
             filename='training_quality_rate_vs_epochs', xlabel="Epoch", ylabel="Quality Rate")
+
+    model_json = model.to_json()
+    with open("./network.json", 'w') as json_file:
+        json_file.write(model_json)
+    model.save_weights("./network.h5")
     return model
 
 if __name__ == '__main__':
