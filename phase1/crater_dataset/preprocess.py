@@ -1,4 +1,4 @@
-#!/anaconda/bin/python
+#!/usr/bin/python
 """
 This will look at the images folder and the specified
 technique to normalize the image and put the image in the normalize_image 
