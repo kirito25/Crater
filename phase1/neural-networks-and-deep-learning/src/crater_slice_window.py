@@ -30,7 +30,7 @@ for (x, y, window, image_layer, layer) in crater_sliding_window(image_1, 100):
         prev_layer = layer
     if np.argmax(model.predict(keras_cnn.cvImg2input(window))) == 1:
         #cv2.rectangle(image_layer,  (x, y), (x + winW, y + winH), (0, 255, 0), 2)
-        cv2.rectangle(image_layer,  (x * layer * layer, y * layer * layer), 
+        cv2.rectangle(og_image,  (x * layer * layer, y * layer * layer), 
                                     ((x + winW) * layer * layer, (y + winH) * layer * layer), 
                                     (0, 255, 0), 2)
     #copy = image_layer.copy()
