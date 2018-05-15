@@ -28,6 +28,7 @@ def crater_sliding_window(image, stepSize):
             if window.shape[0] != winH or window.shape[1] != winW:
                 continue
             yield (x, y, window, image_layer, layer)
+        cv2.imwrite("img_layer_%d.jpeg" % (layer), image_layer)
 
 model = keras_cnn.network()
 og_image = image_1.copy()
@@ -37,8 +38,8 @@ for (x, y, window, image_layer, layer) in crater_sliding_window(image_1, stepsiz
         print "Working on layer %d" % (layer)
         prev_layer = layer
     if np.argmax(model.predict(keras_cnn.cvImg2input(window))) == 1:
-        if show:
-            cv2.rectangle(image_layer,  (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+        cv2.rectangle(image_layer,  (x, y), (x + winW, y + winH), (0, 255, 0), 2)
+
         cv2.rectangle(og_image,  (x * layer * layer, y * layer * layer), 
                                     ((x + winW) * layer * layer, (y + winH) * layer * layer), 
                                     (0, 255, 0), 2)
