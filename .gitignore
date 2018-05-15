@@ -3,6 +3,8 @@ crater_data
 *.pgm
 *.jpg
 *.png
+*.json
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
