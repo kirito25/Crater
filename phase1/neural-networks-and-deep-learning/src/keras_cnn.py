@@ -22,7 +22,7 @@ import tensorflow as tf
 import cv2
 # stop showing the gpu info
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 num_classes = 2 # number of output neuron
 batch_size = 200
@@ -146,12 +146,14 @@ def network(use_save=True):
     Returns a keras network already trained
     """
     if os.path.exists("./network.json") and os.path.exists("./network.h5") and use_save:
+        save = os.environ["CUDA_VISIBLE_DEVICES"]
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
         json_file = open("./network.json", 'r')
         loaded_model_json = json_file.read()
         json_file.close()
         loaded_model = keras.models.model_from_json(loaded_model_json)
         loaded_model.load_weights("./network.h5")
+        os.environ["CUDA_VISIBLE_DEVICES"] = save
         return loaded_model
 
     logger = Logs()
