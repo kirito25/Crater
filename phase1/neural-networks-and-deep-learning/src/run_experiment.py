@@ -15,7 +15,7 @@ N = args.N
 eta = args.eta
 epoch = args.epoch
 mini_batch_size = args.m
-training_data, validation_data, test_data = crater_loader.load_data_wrapper()
+training_data, validation_data, test_data = crater_loader.load_data_wrapper(split=[0.70, 0.15])
 sizes = [len(training_data[0][0][0]) ] + args.S + [len(training_data[0][1])]
 print "Running %d experiments with layers %s, eta = %s, mini_batch_size = %s, epoch = %s" % \
                                                             (N, sizes, eta, mini_batch_size, epoch)
