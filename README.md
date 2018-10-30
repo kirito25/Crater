@@ -16,8 +16,8 @@ $ python preprocess.py -h
 ```
 
 There are two main experiments:
-    - Using a simple neural network (crater_network.py)
-    - Using a Convolution network using Keras (keras_cnn.py)
+- Using a simple neural network (crater_network.py)
+- Using a Convolution network using Keras (keras_cnn.py)
 
 Almost all the programs accept a `-h` flag to show possible options.
 Feel free to mess with them
